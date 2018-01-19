@@ -5,8 +5,8 @@ $this_student = fetch_student_by_login($_SERVER['PHP_AUTH_USER']);
 
 $placements = fetch_placement_list();
 
-// TODO: If active ü folder exists - Old placements. if active and folder doesnt exist - current placements. if not active, dont show. 
-foreach($placements as $act => $placement)
+// TODO: If active ü folder exists - Old placements. if active and folder doesnt exist - current placements. if not active, dont show.
+foreach((array)$placements as $act => $placement)
 {
 	$eligable_groups = array();
 	$eligable_groups = explode(";", $placement->GROUPS);
