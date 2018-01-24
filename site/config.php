@@ -6,8 +6,8 @@ define("DB_PATH", "../database");
 define("RECAPTCHA_SECRET_KEY", "");
 define("RECAPTCHA_PUBLIC_KEY", "");
 define("WEBSITE_NAME", "PlaCoTo");
-define("WEBSITE_URL", "example.org");
-define("EMAIL_SENDER", "mail@example.org");
+define("WEBSITE_URL", $_SERVER['HTTP_HOST']);
+define("EMAIL_SENDER", 'admin@kliko42.krarom.com');
 define("COSTUM_TIMEFRAME_MAX", 7);
 
 define("DEDUCTION_ROLL_PLACEMENT", -1);
