@@ -67,7 +67,10 @@ class pw_reset_table
 // GENERAL JSON functions
 function fetch_json_table($file)
 {
-	$this_fetch = file_get_contents(get_DB_PATH() . DIRECTORY_SEPARATOR . $file);
+	$filepath = get_DB_PATH() . DIRECTORY_SEPARATOR . $file;
+	if(!is_file($filepath))
+		return false;
+	$this_fetch = file_get_contents($filepath);
 	if(($this_fetch === false) OR !(count(json_decode($this_fetch, true)) > 0))
 	{
 		return false;
