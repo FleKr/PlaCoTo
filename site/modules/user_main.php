@@ -15,15 +15,15 @@ foreach((array)$placements as $act => $placement)
 		$module_output .= $placement->NAME;
 		if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $placement->ID . DIRECTORY_SEPARATOR))
 		{
-			$module_output .= '( <a href="index.php?act=data_export&id=' . $placement->ID . '">View placement</a> )<br />';					
+			$module_output .= '( <a href="index.php?act=data_export&id=' . $placement->ID . '">View placement</a> )<br />';
 		}
-		elseif(!(fetch_user_wishes($this_student->ID, $placement->ID) === FALSE))
+		elseif(!(fetch_user_wishes($this_student->ID, $placement->ID) === false))
 		{
-			$module_output .= '( <a href="index.php?act=edit_choices&id=' . $placement->ID . '">EDIT CHOICES</a> | <a href="#" onClick="MyWindow=window.open(' . "'" . get_WEBSITE_URL() . 'index.php?act=show_wishes&id=' . $placement->ID . "','MyWindow',width=350,height=500); return false;" . '">Total wishes</a> )<br />';		
+			$module_output .= '( <a href="index.php?act=edit_choices&id=' . $placement->ID . '">EDIT CHOICES</a> | <a href="#" onClick="MyWindow=window.open(' . "'" . get_WEBSITE_URL() . 'index.php?act=show_wishes&id=' . $placement->ID . "','MyWindow',width=350,height=500); return false;" . '">Total wishes</a> )<br />';
 		}
 		else
 		{
-			 $module_output .= '( <a href="index.php?act=enrol&id=' . $placement->ID . '">ENROL</a> | <a href="#" onClick="MyWindow=window.open(' . "'" . get_WEBSITE_URL() . '/index.php?act=show_wishes&id=' . $placement->ID . "','MyWindow',width=350,height=500); return false;" . '">Total wishes</a> )<br />';
+			$module_output .= '( <a href="index.php?act=enrol&id=' . $placement->ID . '">ENROL</a> | <a href="#" onClick="MyWindow=window.open(' . "'" . get_WEBSITE_URL() . '/index.php?act=show_wishes&id=' . $placement->ID . "','MyWindow',width=350,height=500); return false;" . '">Total wishes</a> )<br />';
 		}
 	}
 }

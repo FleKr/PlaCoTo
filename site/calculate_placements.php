@@ -11,14 +11,22 @@ print date('d.m.Y-H:i:s:', time()) . ' Starting script.<br />';
 $placement_list = fetch_placement_list();
 // fetch !1! placement - assume last one in database gets calculated first
 if(empty($placement_list))
-{ die("Placement list is empty."); }
+{
+	die("Placement list is empty.");
+}
 $placement_id = "";
 foreach($placement_list as $this_placement_list)
 {
 	if($this_placement_list->DUE_DATE <= time() && !(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $this_placement_list->ID . DIRECTORY_SEPARATOR)))
-	{ $placement_id = $this_placement_list->ID; $placement_name = $this_placement_list->NAME; }
+	{
+		$placement_id = $this_placement_list->ID;
+		$placement_name = $this_placement_list->NAME;
+	}
 }
-if(empty($placement_id)) { die("Nothing to calculate."); }
+if(empty($placement_id))
+{
+	die("Nothing to calculate.");
+}
 
 ini_set('memory_limit', '-1');
 set_time_limit(-1);
@@ -26,7 +34,9 @@ ignore_user_abort(true);
 
 // Create folder first to lock any following attempts on calculating or DDOSing our script
 if(!is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $placement_id . DIRECTORY_SEPARATOR))
-{ mkdir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $placement_id . DIRECTORY_SEPARATOR, 0777, true); }
+{
+	mkdir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $placement_id . DIRECTORY_SEPARATOR, 0777, true);
+}
 
 include "resources/functions_calculate_placements.php";
 
@@ -52,9 +62,9 @@ $placement_student = combine_wishlist_and_student_table($wishlist_table, $studen
 array_unshift($priority_types, "JOKER");
 $multiplied_iteration = array();
 for($i = 1, $iteration_multiplier = get_ITERATION_MULTIPLIER(), $chunk_output = ""; $iteration_multiplier >= $i && (!(microtime(true) > ($time_begin + get_MAX_RUNTIME())) || get_MAX_RUNTIME() == 0); $i++)
-{	
+{
 	print date('d.m.Y-H:i:s:', time()) . " Begin chunk " . $i . " (chunk size: " . get_ITERATIONS() . ")<br />";
-	$multiplied_iteration[$i] = calculate_chunk($placement_student, $placements, $priority_types, $i); 
+	$multiplied_iteration[$i] = calculate_chunk($placement_student, $placements, $priority_types, $i);
 	$chunk_output .= '<br />Chunk ' . $i . ' with ' . get_ITERATIONS() . ' iterations. Unallocated students: ' . count($multiplied_iteration[$i]->unallocated_students) . '; Unallocated min placements: ' . count($multiplied_iteration[$i]->unallocated_min_places) . '; Happiness maximum: ' . $multiplied_iteration[$i]->overall_happiness . ';';
 }
 $result_table = check_chunks($multiplied_iteration);
@@ -68,27 +78,27 @@ insert_calculation_file($placement_id, "placements", $result_table) or $result_t
 // Insert Joker and Karma + Joker values into students table
 foreach($result_table->students as $this_student)
 {
-	$students_by_id[$this_student->id]["KARMA"] = $this_student->karma; 
-	$students_by_id[$this_student->id]["JOKER"] = $this_student->joker; 
+	$students_by_id[$this_student->id]["KARMA"] = $this_student->karma;
+	$students_by_id[$this_student->id]["JOKER"] = $this_student->joker;
 }
 
 if(empty($result_table->unallocated_students) && empty($result_table->unallocated_min_places))
 {
-	$result_table->report_output .= "<br /><br />Step 6: Replacing the old students table with the new one & Sending emails to students."; 
+	$result_table->report_output .= "<br /><br />Step 6: Replacing the old students table with the new one & Sending emails to students.";
 	print date('d.m.Y-H:i:s:', time()) . " Saving updated students.json<br />";
-	file_put_contents(get_DB_PATH() . DIRECTORY_SEPARATOR . 'students.json', json_encode($students_by_id)) or die("Replacing the old students table FAILED.");  
-	inform_students_via_email($result_table->students, $students_by_id, $result_table->placements, $placement_name, $placement_id, FALSE) or $result_table->report_output .= " ERROR informing students via email."; 
+	file_put_contents(get_DB_PATH() . DIRECTORY_SEPARATOR . 'students.json', json_encode($students_by_id)) or die("Replacing the old students table FAILED.");
+	inform_students_via_email($result_table->students, $students_by_id, $result_table->placements, $placement_name, $placement_id, false) or $result_table->report_output .= " ERROR informing students via email.";
 }
 else
 {
 	$result_table->report_output .= "<br />There were errors while calculating. I will save a copy of the calculated students table in the calculation folder without replacing the stundents database.<br />";
 	print date('d.m.Y-H:i:s:', time()) . " Errors calculating - Sending emails to admins<br />";
-	insert_calculation_file($placement_id, "students_new", $students_by_id) or $result_table->report_output .= "<br /><b>HOOOMANZ!</b> I haven`t been able to upload the students file. :("; 
-	send_admin_email("There were errors calculating " . $placement_name , 'Dear Admin,<br /><br />I was unable to calculate a good table for the students. <br />Check the calculation:<br /><a href="' . get_WEBSITE_URL() . 'reports' . DIRECTORY_SEPARATOR . 'report_' . $placement_id . '.html' . '">Report</a><br /><br />Current report:<br />' . $result_table->report_output);
-	inform_students_via_email($result_table->students, $students_by_id, $result_table->placements, $placement_name, $placement_id, TRUE) or $result_table->report_output .= " ERROR saving emails in folder."; 
-}			
+	insert_calculation_file($placement_id, "students_new", $students_by_id) or $result_table->report_output .= "<br /><b>HOOOMANZ!</b> I haven`t been able to upload the students file. :(";
+	send_admin_email("There were errors calculating " . $placement_name, 'Dear Admin,<br /><br />I was unable to calculate a good table for the students. <br />Check the calculation:<br /><a href="' . get_WEBSITE_URL() . 'reports' . DIRECTORY_SEPARATOR . 'report_' . $placement_id . '.html' . '">Report</a><br /><br />Current report:<br />' . $result_table->report_output);
+	inform_students_via_email($result_table->students, $students_by_id, $result_table->placements, $placement_name, $placement_id, true) or $result_table->report_output .= " ERROR saving emails in folder.";
+}
 
-$time_end = microtime(true) - $time_begin; 
+$time_end = microtime(true) - $time_begin;
 $result_table->report_output .= '<br /><br /><b>RESULTS:</b>' . result_placement_report($result_table->placements) . '<br /><br />A total of ' . (($i - 1) * get_ITERATIONS()) . ' iterations have been calculated.<br /><b>Ok, that`s all. I`m done for today.</b> Calculation took ' . $time_end . ' Seconds';
 upload_report($result_table->report_output, $result_table->iteration_output, 'reports' . DIRECTORY_SEPARATOR . 'report_' . $placement_id . '.html');
 

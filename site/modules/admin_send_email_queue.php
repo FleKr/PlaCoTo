@@ -20,20 +20,29 @@ if(count($emails_fetched) > 0)
 		$current_email_queue = fetch_email_queue();
 		// run tasks and skip failed emails
 		if(send_email($current_email_queue[$failed]->receiver, $current_email_queue[$failed]->topic, $current_email_queue[$failed]->message))
-		{ 
+		{
 			unset($current_email_queue[$failed]);
 			if(file_put_contents(get_DB_PATH() . DIRECTORY_SEPARATOR . 'emails.json', json_encode($current_email_queue)))
-			{ print ' SUCCES!<br />'; }
+			{
+				print ' SUCCES!<br />';
+			}
 			else
-			{ die("Failed uploading the email queue after iteration " . $i); }
+			{
+				die("Failed uploading the email queue after iteration " . $i);
+			}
 		}
 		else
-		{ $failed++; print ' FAILED :(<br />'; }
+		{
+			$failed++;
+			print ' FAILED :(<br />';
+		}
 	}
 }
-else 
-{ print date('d.m.Y-H:i:s:', time()) . ' Nothing to send.<br />'; }
-	
+else
+{
+	print date('d.m.Y-H:i:s:', time()) . ' Nothing to send.<br />';
+}
+
 print date('d.m.Y-H:i:s:', time()) . ' Script ended.';
 
 ?>

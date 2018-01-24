@@ -6,11 +6,15 @@ $this_username = $this_user->LOGIN;
 $this_karma = $this_user->KARMA;
 $this_joker = $this_user->JOKER;
 if($this_user->STATUS == "ADMIN")
-{ $admin_link = ' | <a href="admin.php" target="_blank">AdminCP</a>'; }
+{
+	$admin_link = ' | <a href="admin.php" target="_blank">AdminCP</a>';
+}
 $logout_link = '<a href="http://log:out@' . $_SERVER['HTTP_HOST'] . '/">Logout</a>';
 $title = '<title>' . get_WEBSITE_NAME() . '</title>';
 if(isset($_GET["act"]) && $_GET["act"] == "show_wishes")
-{ $header = ''; }
+{
+	$header = '';
+}
 else
 {
 	$header = <<< EOT

@@ -24,7 +24,7 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 	$deployment = "";
 	foreach($calculation_table as $placements)
 	{
-		if (!($deployment == $placements["deployment"]))
+		if(!($deployment == $placements["deployment"]))
 		{
 			$deployment = $placements["deployment"];
 			$xls_output .= $placements["deployment"] . "\t";
@@ -57,7 +57,7 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 		{
 			if(!(empty($placements["students_alloc"][$i])))
 			{
-				$xls_output .= $placements["students_alloc"][$i] . "\t";			
+				$xls_output .= $placements["students_alloc"][$i] . "\t";
 			}
 			else
 			{

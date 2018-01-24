@@ -4,9 +4,9 @@ $output_add_placements = "";
 
 function create_dropdowns($id, $field, $field_descr)
 {
-$dropdown = '<select name="' . $field_descr . '" style="width: 200px">';
+	$dropdown = '<select name="' . $field_descr . '" style="width: 200px">';
 	$items = fetch_placement_item($id, $field);
-	foreach ($items as $item)
+	foreach($items as $item)
 	{
 		$dropdown .= '<option value="' . $item . '" >' . $item . '</option>';
 	}
@@ -20,11 +20,16 @@ if(isset($_GET["id"]))
 	if(isset($_GET["submit"]))
 	{
 		if((!is_numeric($_POST["places_min"]) && !empty($_POST["places_min"])) || (!is_numeric($_POST["places_max"]) && !empty($_POST["places_max"])))
-		{ die("Places min / max is not a number"); }
+		{
+			die("Places min / max is not a number");
+		}
 		$output_add_placements .= 'Placement succesfully added. You can go to the <a href="admin.php?act=edit_placements&id=' . $_GET["id"] . '" />Placements overview</a> or add another one:<br /><br />';
 		if(!(isset($_POST["timeframe"])) || $_POST["timeframe"] == "OTHER")
 		{
-			if(!is_valid_date($_POST["begin"]) || !is_valid_date($_POST["end"])) { die("Dates are not valid."); }
+			if(!is_valid_date($_POST["begin"]) || !is_valid_date($_POST["end"]))
+			{
+				die("Dates are not valid.");
+			}
 			$placement_begin = german_date_to_timestamp($_POST["begin"]);
 			$placement_end = german_date_to_timestamp($_POST["end"]);
 		}
@@ -36,28 +41,44 @@ if(isset($_GET["id"]))
 			$placement_end = $timeframe_explode[1];
 		}
 
-		if($_POST["deployment"] == "OTHER") 
+		if($_POST["deployment"] == "OTHER")
 		{
 			check_post_special_chars($_POST["other_deployment"]) or die("Error updating the deployment");
-			$submitted_deployment = $_POST["other_deployment"]; 
+			$submitted_deployment = $_POST["other_deployment"];
 		}
-		else { $submitted_deployment = $_POST["deployment"]; }
-		if($_POST["name"] == "OTHER") 
-		{ 
-			check_post_special_chars($_POST["other_name"]) or die("Error updating the name");	
-			$submitted_name = $_POST["other_name"]; 
+		else
+		{
+			$submitted_deployment = $_POST["deployment"];
 		}
-		else { $submitted_name = $_POST["name"]; }
-		if($_POST["location"] == "OTHER") 
-		{ 
-			check_post_special_chars($_POST["other_location"]) or die("Error updating the location");		
-			$submitted_location = $_POST["other_location"]; 
+		if($_POST["name"] == "OTHER")
+		{
+			check_post_special_chars($_POST["other_name"]) or die("Error updating the name");
+			$submitted_name = $_POST["other_name"];
 		}
-		else { $submitted_location = $_POST["location"]; }
-		if(isset($_POST["essential"])) { $submitted_essential = TRUE; } else { $submitted_essential = FALSE; }
+		else
+		{
+			$submitted_name = $_POST["name"];
+		}
+		if($_POST["location"] == "OTHER")
+		{
+			check_post_special_chars($_POST["other_location"]) or die("Error updating the location");
+			$submitted_location = $_POST["other_location"];
+		}
+		else
+		{
+			$submitted_location = $_POST["location"];
+		}
+		if(isset($_POST["essential"]))
+		{
+			$submitted_essential = true;
+		}
+		else
+		{
+			$submitted_essential = false;
+		}
 		insert_new_placement($_GET["id"], $submitted_essential, $submitted_name, $submitted_deployment, $submitted_location, $placement_begin, $placement_end, $_POST["places_min"], $_POST["places_max"]);
 	}
-	
+
 	$placements = fetch_placements($_GET["id"]);
 	if(!empty($placements))
 	{
@@ -65,13 +86,13 @@ if(isset($_GET["id"]))
 		$deployment = create_dropdowns($_GET["id"], "DEPLOYMENT", "deployment");
 		$name = create_dropdowns($_GET["id"], "NAME", "name");
 		$locations = create_dropdowns($_GET["id"], "LOCATION", "location");
-		
+
 		// CREATE Timeframe dropdown
 		$timeframes = calculate_timeframes($placements);
 		$timeframe_dropdown = "<select name=\"timeframe\" style=\"width: 180px\">";
 		foreach($timeframes as $this_timeframe)
 		{
-				$timeframe_dropdown .= '<option value="' . german_date_to_timestamp($this_timeframe->begin) . '::' . german_date_to_timestamp($this_timeframe->end) . '">'. $this_timeframe->begin . '-' . $this_timeframe->end . '</option>';
+			$timeframe_dropdown .= '<option value="' . german_date_to_timestamp($this_timeframe->begin) . '::' . german_date_to_timestamp($this_timeframe->end) . '">' . $this_timeframe->begin . '-' . $this_timeframe->end . '</option>';
 		}
 		$timeframe_dropdown .= '<option value="OTHER">OTHER (write:)</option></select>';
 	}

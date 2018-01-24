@@ -9,11 +9,11 @@ $time_to_reset = 60 * 30;
 if(!isset($_GET["step"]))
 {
 	if(check_use_captcha())
-	{ 
-		$extra_scripts = "<script src='https://www.google.com/recaptcha/api.js'></script>"; 
+	{
+		$extra_scripts = "<script src='https://www.google.com/recaptcha/api.js'></script>";
 		$captcha_html = '<div class="g-recaptcha" data-sitekey="' . $get_RECAPTCHA_PUBLIC_KEY() . '"></div>';
 	}
-$output_reset_password = <<< EOT
+	$output_reset_password = <<< EOT
 <!doctype html>
 <html>
   <head>
@@ -55,7 +55,7 @@ elseif($_GET["step"] == "submit")
 			if(!(identifier_matches($_POST["identifier"])))
 			{
 				$error = "Email or Username not found.";
-			}	
+			}
 			else
 			{
 				$code_string = return_random_hexadecimal(20);
@@ -65,13 +65,20 @@ elseif($_GET["step"] == "submit")
 					$code_link = get_WEBSITE_URL() . 'index.php?act=reset_password&step=reset&code=' . $code_string;
 					$email_output = 'Hello, a password reset was requested. If this has been you, please click <a href="' . $code_link . '">here</a> or paste this into your browsers adress bar: ' . $code_link . '<br /><br />This code will be valid for ' . ($time_to_reset / 60) . ' minutes.';
 					if(send_email(fetch_student_by_id($user_id)->EMAIL, "Reset password", $email_output))
-					{ $output_reset_password .= " Check your emails to reset your password. You have got " . ($time_to_reset / 60) . " minutes time to reset the password."; }
-					else { $error = "I haven't been able to send the email."; }
+					{
+						$output_reset_password .= " Check your emails to reset your password. You have got " . ($time_to_reset / 60) . " minutes time to reset the password.";
+					}
+					else
+					{
+						$error = "I haven't been able to send the email.";
+					}
 				}
 			}
 		}
 		if(!($error == ""))
-		{ $output_reset_password = $error; }
+		{
+			$output_reset_password = $error;
+		}
 	}
 }
 
@@ -92,16 +99,18 @@ elseif($_GET["step"] == "reset")
 		{
 			// Check if code exists in database
 			$reset_password_codes = fetch_reset_password_codes();
-			foreach ($reset_password_codes as $reset_password_code)
+			foreach($reset_password_codes as $reset_password_code)
 			{
-				if($reset_password_code->CODE == $_GET["code"] && ($reset_password_code->TIMESTAMP > (time()-$time_to_reset)))
-				{ $return_id = $reset_password_code->ID; }
-				elseif (!($reset_password_code->CODE == $_GET["code"]) && $reset_password_code->TIMESTAMP > (time()-$time_to_reset))
+				if($reset_password_code->CODE == $_GET["code"] && ($reset_password_code->TIMESTAMP > (time() - $time_to_reset)))
 				{
-					$new_table[$reset_password_code->ID] = new pw_reset_table; 
-					$new_table[$reset_password_code->ID] -> ID = $reset_password_code->ID;
-					$new_table[$reset_password_code->ID] -> CODE = $reset_password_code->CODE;
-					$new_table[$reset_password_code->ID] -> TIMESTAMP = $reset_password_code->TIMESTAMP;
+					$return_id = $reset_password_code->ID;
+				}
+				elseif(!($reset_password_code->CODE == $_GET["code"]) && $reset_password_code->TIMESTAMP > (time() - $time_to_reset))
+				{
+					$new_table[$reset_password_code->ID] = new pw_reset_table;
+					$new_table[$reset_password_code->ID]->ID = $reset_password_code->ID;
+					$new_table[$reset_password_code->ID]->CODE = $reset_password_code->CODE;
+					$new_table[$reset_password_code->ID]->TIMESTAMP = $reset_password_code->TIMESTAMP;
 				}
 			}
 			// clear cache from result and / or old items
@@ -109,17 +118,17 @@ elseif($_GET["step"] == "reset")
 			{
 				$error = "Updating code database did not work.";
 			}
-			
+
 			if(empty($return_id))
 			{
 				$error = "Code invalid.";
-			}	
+			}
 			else
 			{
 				$student_table = fetch_json_table('students.json');
-				if (!($student_table === FALSE))
+				if(!($student_table === false))
 				{
-					foreach($student_table as &$this_table_student) 
+					foreach($student_table as &$this_table_student)
 					{
 						if($this_table_student["ID"] == $return_id)
 						{
@@ -129,17 +138,22 @@ elseif($_GET["step"] == "reset")
 							{
 								$output_reset_password = "A new password has been sent to your email adress.";
 								// Email stuff
-								$message = 'Hello ' . $this_table_student["NAME"] . '<br /><br />Your new password is: '. $new_password . '<br />Your login (just in case you forgot) is: ' . $this_table_student["LOGIN"] . '<br /><a href="' . get_WEBSITE_URL() . '">Login right away</a>.';
-								send_email($this_table_student["EMAIL"], "Your password has been reset" , $message);	
+								$message = 'Hello ' . $this_table_student["NAME"] . '<br /><br />Your new password is: ' . $new_password . '<br />Your login (just in case you forgot) is: ' . $this_table_student["LOGIN"] . '<br /><a href="' . get_WEBSITE_URL() . '">Login right away</a>.';
+								send_email($this_table_student["EMAIL"], "Your password has been reset", $message);
 							}
-							else { $error = "Updating the database did not work."; }
+							else
+							{
+								$error = "Updating the database did not work.";
+							}
 						}
 					}
 				}
 			}
 		}
 		if(!($error == ""))
-		{ $output_reset_password = $error; }
+		{
+			$output_reset_password = $error;
+		}
 	}
 }
 

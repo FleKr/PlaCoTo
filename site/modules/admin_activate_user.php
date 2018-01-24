@@ -3,10 +3,10 @@
 include "resources/email_functions.php";
 
 $student_table = fetch_json_table('students.json');
-$success = FALSE;
-if (!($student_table === FALSE))
+$success = false;
+if(!($student_table === false))
 {
-	foreach($student_table as &$this_table_student) 
+	foreach($student_table as &$this_table_student)
 	{
 		if($this_table_student["ID"] == $_GET["id"])
 		{
@@ -18,12 +18,19 @@ if (!($student_table === FALSE))
 					$module_output = "User succesfully activated.";
 					// Email stuff
 					$message = 'Hello ' . $this_table_student["NAME"] . '<br /><br />Welcome to the placement coordination tool.<br /> You can begin checking for placements right away. Just <a href="http://' . $_SERVER['HTTP_HOST'] . '">Login</a>';
-					send_email($this_table_student["EMAIL"], "Your account was activated" , $message);	
-					$success = TRUE;
+					send_email($this_table_student["EMAIL"], "Your account was activated", $message);
+					$success = true;
 				}
-				else { $module_output = "Updating the database did not work."; }
+				else
+				{
+					$module_output = "Updating the database did not work.";
+				}
 			}
-			else { $module_output = "User has already been activated."; $success = TRUE; }
+			else
+			{
+				$module_output = "User has already been activated.";
+				$success = true;
+			}
 		}
 	}
 }

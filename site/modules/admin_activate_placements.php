@@ -8,20 +8,20 @@ $module_output = "";
 $emails_to_students = array();
 $emails_to_students_counter = 0;
 $placement_list = fetch_placement_list();
-$triggered = FALSE;
+$triggered = false;
 foreach($placement_list as $placement)
 {
 	if($_GET["id"] == $placement->ID)
-	{ 
-		$placement->ACTIVE = 1; 
-		$triggered = TRUE;
+	{
+		$placement->ACTIVE = 1;
+		$triggered = true;
 		$groups_active = explode(";", $placement->GROUPS);
 		$placement_name = $placement->NAME;
 		$placement_due_date = $placement->DUE_DATE;
 		$link = get_WEBSITE_URL() . 'index.php?act=enrol&id=' . $_GET["id"];
 	}
 }
-if($triggered === TRUE)
+if($triggered === true)
 {
 	if(file_put_contents(get_DB_PATH() . DIRECTORY_SEPARATOR . 'placements.json', json_encode($placement_list)))
 	{
@@ -37,7 +37,7 @@ if($triggered === TRUE)
 				$emails_to_students[$emails_to_students_counter]->topic = "Placement " . $placement_name . " is now open for enrolment";
 				$emails_to_students[$emails_to_students_counter]->message = 'Hello ' . $student["NAME"] . ',<br /><br />There is a new placement you can enrol to: ' . $placement_name . ' Enroling closes at ' . timestamp_to_german_date($placement_due_date) . '.<br /><a href="' . $link . '">Enrol right away</a>';
 				$emails_to_students_counter++;
-			}			
+			}
 		}
 		if(add_emails($emails_to_students))
 		{
@@ -46,7 +46,7 @@ if($triggered === TRUE)
 		else
 		{
 			$module_output .= "<br />Could not save Emails saved for sending.<br />";
-		}	
+		}
 	}
 	else
 	{

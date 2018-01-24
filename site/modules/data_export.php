@@ -16,11 +16,13 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 	$xls_output .= header("Content-Type: application/vnd.ms-excel");
 
 	$fetch_calculation = fetch_json_table(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . DIRECTORY_SEPARATOR . "placements" . '.json');
-	
+
 	// Check if there are conflicts to be resolved. If so, don`t print to users, admin only.
 	if(!(empty($fetch_calculation["unallocated_min_places"])) || !(empty($fetch_calculation["unallocated_students"])))
-	{ check_user_login(FALSE); }
-	
+	{
+		check_user_login(false);
+	}
+
 	$calculation_table = $fetch_calculation["placements"];
 	// sort by deployment
 	usort($calculation_table, "sort_by_deployment");
@@ -29,7 +31,7 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 	$deployment = "";
 	foreach($calculation_table as $placements)
 	{
-		if (!($deployment == $placements["deployment"]))
+		if(!($deployment == $placements["deployment"]))
 		{
 			$deployment = $placements["deployment"];
 			$xls_output .= $placements["deployment"] . "\t";
@@ -62,7 +64,7 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 		{
 			if(!(empty($placements["students_alloc"][$i])))
 			{
-				$xls_output .= ($i + 1) . ". " . $placements["students_alloc"][$i] . "\t";			
+				$xls_output .= ($i + 1) . ". " . $placements["students_alloc"][$i] . "\t";
 			}
 			elseif(($i + 1) <= $placements["places_max"])
 			{
@@ -70,7 +72,7 @@ if(is_dir(get_DB_PATH() . DIRECTORY_SEPARATOR . 'calculation_' . $_GET["id"] . D
 			}
 			else
 			{
-				$xls_output .= "\t";				
+				$xls_output .= "\t";
 			}
 		}
 		$xls_output .= "\r\n";
